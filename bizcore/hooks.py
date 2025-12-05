@@ -21,6 +21,16 @@ app_license = "mit"
 # 	}
 # ]
 
+doc_events = {
+    "Job Offer": {
+        "before_save": "bizcore.print_format.set_print_format"
+    }
+}
+
+doctype_js = {
+    "Job Offer": "public/js/job_offer_print.js"
+}
+
 # Includes in <head>
 # ------------------
 
