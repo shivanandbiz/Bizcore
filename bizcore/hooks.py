@@ -252,3 +252,11 @@ doctype_js = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+permission_query_conditions = {
+    "Task": "bizcore.task_filter.get_permission_query_conditions"
+}
+
+has_permission = {
+    "Task": "bizcore.task_filter.has_permission"
+}
+
