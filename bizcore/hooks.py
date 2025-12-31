@@ -31,6 +31,7 @@ doctype_js = {
     "Job Offer": "public/js/job_offer_print.js"
 }
 
+# testin app
 # Includes in <head>
 # ------------------
 
