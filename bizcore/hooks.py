@@ -251,7 +251,7 @@ doctype_js = {
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
-
+#hook for task doctype
 permission_query_conditions = {
     "Task": "bizcore.task_filter.get_permission_query_conditions"
 }
