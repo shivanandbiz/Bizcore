@@ -1,33 +1,48 @@
 import frappe
- 
+
+
 def get_permission_query_conditions(user):
-    if not user or user == "Administrator":
+    """
+    Restrict Task records based on user permissions.
+    """
+    if not user:
+        user = frappe.session.user
+
+    # System Manager should see all Tasks
+    if "System Manager" in frappe.get_roles(user):
         return ""
- 
-    roles = frappe.get_roles(user)
-    if "Projects Manager" in roles or "Delivery Manager" in roles:
-        return ""  # Allow full access
- 
-    # Only show tasks assigned to the user
-    return f"""EXISTS (
-        SELECT 1 FROM `tabToDo`
-        WHERE `tabToDo`.reference_type = 'Task'
-        AND `tabToDo`.reference_name = `tabTask`.name
-        AND `tabToDo`.allocated_to = '{user}'
-    )"""
- 
-def has_permission(doc, ptype, user):
-    if user == "Administrator":
+
+    # Example: allow only tasks assigned to the user
+    return f"""
+        `tabTask`.name IN (
+            SELECT reference_name
+            FROM `tabToDo`
+            WHERE owner = '{user}'
+              AND reference_type = 'Task'
+        )
+    """
+
+
+def has_permission(doc, user):
+    """
+    Row-level permission check for Task.
+    """
+    if not user:
+        user = frappe.session.user
+
+    # System Manager full access
+    if "System Manager" in frappe.get_roles(user):
         return True
- 
-    roles = frappe.get_roles(user)
-    if "Projects Manager" in roles or "Delivery Manager" in roles:
-        return True  # Full access
- 
-    # Only allow if task is assigned to the user
-    return frappe.db.exists("ToDo", {
-        "reference_type": "Task",
-        "reference_name": doc.name,
-        "allocated_to": user
-    })
-    
+
+    # Allow if task is assigned to user
+    assigned_users = frappe.get_all(
+        "ToDo",
+        filters={
+            "reference_type": "Task",
+            "reference_name": doc.name,
+            "owner": user,
+        },
+        limit=1,
+    )
+
+    return bool(assigned_users)
